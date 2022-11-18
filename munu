@@ -1,0 +1,38 @@
+#!/bin/sh
+#menu code created by Dana sobhi
+echo "Enter whenever e Encryption or d Decryption"
+read choise #read the choise 
+	case $choise in #case between e or d 
+		e)while true
+			do
+			echo "Encryption, please input the file name" #choosing e
+			read filename #read the file name
+				if [ -f $filename ]; then
+					if ( cat $filename  | sed  s/\ //g | grep -i -q -x '[a-z]*' ) #read the file to check if all letters are alphabetical, 
+							#sed used to remove white spaces and lines.  
+					then  echo "only alphabetical"  #-i used to be case insensitive , -q to make it into a flag  0 or 1 ,
+							# -x for to match the whole line read by cat. 
+						./encryption $filename #call the function we need to use for Encryption
+						echo "Enter the cipher file" #then what the file name we need to copy into
+							read foldername  #read that file name we used folder to not mix up variables
+							echo "copying into the file"  #copy into the file
+							cat filenameofcodes > $foldername #overwrite into the givin file
+					else echo " there's a non- alphabetical words , cant read the file" #else  theres a non alphabetical words in the file , then we can not use it 
+					     echo "enter another file" 
+					fi #close of if statement 
+				     echo " do you want to exit? type 1 "
+					read answe
+					  if [ $answe = 1 ]; then 
+						exit
+					  fi
+						
+				else echo "file does not exist"
+				fi
+			 done ;;
+		d)echo "Decryption, please input the cipher file name"
+			read namefolder #get the file name 
+			./decryption $namefolder #call the decryption file to let it compile 
+				echo "please Enter the plain file name"
+					read namefile #read the name of the file 
+				cat plainfile > $namefile ;; #copy the data into it and close the case of d statement 
+	esac

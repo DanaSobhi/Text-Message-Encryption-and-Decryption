@@ -1,0 +1,125 @@
+#!/bin/sh
+# encryption code made by dana and rawan 
+answer=0 #set answer
+if [ -e filenameofcodes ]; then rm filenameofcodes ; fi #if the code file exist delete it so the data wont stack up 
+testo="$1"
+words=`cat $testo` #read the file line by line
+echo "step 1\n" #step 1 generate the key 
+for i in $words #take each word in the file
+ do 
+
+	echo $i | tr [:upper:] [:lower:] | grep -o . |  #and read each letter using grep regardless of their case upper or lower case
+	{	while read char #while taking each character
+			do
+			echo "$char" 
+			charac=$char 
+			case $charac in #set a case for each character 
+				a) charac=1 ;;
+				b) charac=2 ;;
+				c) charac=3 ;;
+				d) charac=4 ;;
+				e) charac=5 ;;
+                                f) charac=6 ;;
+                                g) charac=7 ;;
+                                h) charac=8 ;;
+                                i) charac=9 ;;
+                                j) charac=10 ;;
+                                k) charac=11 ;;
+                                l) charac=12 ;;
+                                m) charac=13 ;;
+                                n) charac=14 ;;
+                                o) charac=15 ;;
+                                p) charac=16 ;;
+                                q) charac=17 ;;
+                                r) charac=18 ;;
+                                s) charac=19 ;;
+                                t) charac=20 ;;
+                                u) charac=21 ;;
+                                v) charac=22 ;;
+                                w) charac=23 ;;
+                                x) charac=24 ;;
+                                y) charac=25 ;;
+                                z) charac=26 ;;
+				*) charac=0 ;;
+			esac
+			echo "$charac"
+		        sum=$(expr $sum + $charac) #sum the letters of the word
+			answer=$sum #let answer as the last result of the sum
+		#echo $answer
+		done
+		answer=$(($answer % 256))
+ 		echo "$answer" >> fileAnswers #echo the final answer then put it into a file
+		echo "The sum of the word is : $answer" 
+ }
+	echo "end of $i word" #in the end print the words are finished for each of them.
+ done
+
+echo "the key is "
+sort -nr fileAnswers | head -n 1 #sort the file in reverse to get the key " will be the top line in the file ' and print it to the screen. 
+#step 2
+echo "\n step 2\n"
+echo "the key in binary:"
+n=$(sort -nr fileAnswers | head -n 1)
+q=$(printf "%08d\n" "$(echo "obase=2; $n" | bc)") #present using bc , the key in 8-bit binary 
+echo "$q\n"
+echo "step 3\n"
+#step 3 give an ascii number 
+swapped=0
+for i in $words #take each word in the file
+ do 
+
+	echo $i | tr [:upper:] [:lower:] | grep -o . |  #and read each letter using grep regardless of their case upper or lower case
+	{	while read char #while taking each character
+			do 
+			charac=$char 
+			case $charac in #set a case for each character 
+				a) charac=97 ;;
+                                b) charac=98 ;;
+                                c) charac=99 ;;
+                                d) charac=100 ;;
+                                e) charac=101 ;;
+                                f) charac=102 ;;
+                                g) charac=103 ;;
+                                h) charac=104 ;;
+                                i) charac=105 ;;
+                                j) charac=106 ;;
+                                k) charac=107 ;;
+                                l) charac=108 ;;
+                                m) charac=109 ;;
+                                n) charac=110 ;;
+                                o) charac=111 ;;
+                                p) charac=112 ;;
+                                q) charac=113 ;;
+                                r) charac=114 ;;
+                                s) charac=115 ;;
+                                t) charac=116 ;;
+                                u) charac=117 ;;
+                                v) charac=118 ;;
+                                w) charac=119 ;;
+                                x) charac=120 ;;
+                                y) charac=121 ;;
+                                z) charac=122 ;;
+			esac
+			swapped=$(($n ^ $charac)) #performe xor in the numbers with the key. 
+			m=$(printf "%08d\n" "$(echo "obase=2; $swapped" | bc)")
+			echo $m #presend them finally as 8-bit numbers. 
+			echo "$m" >> fileFlipped #echo the final flipped character then put it into a file
+		done
+ }
+	echo "end of $i word" #in the end print the words are finished for each of them.
+ done
+echo "step 4 \n"
+words=`cat fileFlipped` #read the file line by line
+for t in $words #take each word in the file
+ do 
+	echo $t | perl -pe 's/(....)(....)/$2$1/'
+	echo $t | perl -pe 's/(....)(....)/$2$1/' >> filenameofcodes #swap using perl then copy the data into the file.
+done
+echo "Step 5 \n"
+#step 5 switch the key and add it as the last character of the file 
+echo "$q" | perl -pe 's/(....)(....)/$2$1/'
+echo "$q" | perl -pe 's/(....)(....)/$2$1/' >> filenameofcodes
+
+echo "Done Encryption \n"
+rm fileAnswers #delete the files so data wont stack up 
+rm fileFlipped  #delete the files so data wont stack up 

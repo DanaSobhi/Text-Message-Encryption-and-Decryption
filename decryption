@@ -1,0 +1,32 @@
+#!/bin/sh
+#decryption code made by dana sobhi
+#step 1
+testo="$1"
+words=`cat $testo` #read the file line by line
+echo "step 1\n" #step 1 generate the key 
+key=$(cat $testo | tail -n 1 | perl -pe 's/(....)(....)/$2$1/')
+echo $key
+#generate the key 
+gkey=$(printf "%d\n" "$(echo "ibase=2; $key" | bc)")
+echo "key in decimal $gkey" 
+
+#step 2
+echo " step 2 switch again "
+
+for t in $words #take each word in the file
+ do 
+#i will swap all the file at once 
+	echo $t | perl -pe 's/(....)(....)/$2$1/' >> filecodeswapped #swap using perl then copy the data into the file.
+	echo $t | perl -pe 's/(....)(....)/$2$1/'
+done
+echo "step 3"
+words=`cat filecodeswapped`
+for t in $words #take each word in the file
+ do 
+	h=$(printf "%d\n" "$(echo "ibase=2; $t" | bc)") #generate it into decimal
+	afterXOR=$(($gkey ^ $h)) #XOR with the key
+	echo $afterXOR | awk '{ printf("%c",$0); }' 
+done > plainfile #copy into a plain file 
+cat plainfile
+echo "\n"
+rm filecodeswapped #remove the file so the data wont stack up  
